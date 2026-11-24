@@ -1,7 +1,7 @@
 import { getCommands } from "../command.js";
 import { State } from "../state.js";
 
-export function commandhelp(state: State) {
+export async function commandhelp(state: State) {
   const allCommands = state.commands;
   console.log("Welcome to the Pokedex!")
   console.log("Usage:")
