@@ -8,14 +8,15 @@ export function startREPL(state: State) {
     if (!input.length) readLine.prompt();
 
     const isValidCommand = commands.hasOwnProperty(input);
-    if (isValidCommand) commands[input].callback({
-      readLine,
-      commands
-    });
-    else console.log("Unknown command");
-
-    // const res = cleanInput(input);
-    readLine.prompt();
+    if (isValidCommand)
+      commands[input].callback({
+        readLine,
+        commands,
+      });
+    else {
+      console.log("Unknown command");
+      readLine.prompt();
+    }
   });
 }
 
