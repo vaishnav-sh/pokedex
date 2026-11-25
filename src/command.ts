@@ -1,3 +1,4 @@
+import { commandClear } from "./commands/clear.js";
 import { commandExit } from "./commands/exit.js";
 import { commandhelp } from "./commands/help.js";
 import { commandmap } from "./commands/map.js";
@@ -25,6 +26,11 @@ export function getCommands(): Record<string, CLICommand> {
       name: "mapb",
       description: "Displays previous Pokemon locations",
       callback: commandmapb,
+    },
+    clear: {
+      name: "clear",
+      description: "Clears the console",
+      callback: commandClear
     }
   };
 }

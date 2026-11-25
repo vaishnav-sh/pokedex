@@ -21,13 +21,13 @@ export function initState(): State {
   const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
-    prompt: "Pokedex> ",
+    prompt: "\x1b[31mPokedex>\x1b[0m",
   });
 
   return {
     readLine: rl,
     commands: getCommands(),
-    pokeInstance: new PokeAPI(),
+    pokeInstance: new PokeAPI(300_000),
     nextLocationsURL: null,
     prevLocationsURL: null
   }
