@@ -1,7 +1,8 @@
 import { Cache } from "./pokecache.js";
+import { Pokemon } from "./state.js";
 
 export class PokeAPI {
-  private static readonly defaultURL = "https://pokeapi.co/api/v2/location-area?offset=0&limit=20";
+  private static readonly baseURL = "https://pokeapi.co/api/v2";
   private pokeCache;
 
   constructor(interval: number) {
@@ -10,10 +11,11 @@ export class PokeAPI {
 
   async fetchLocations(pageURL?: string | null): Promise<ShallowLocations> {
     try {
-      const url = pageURL ?? PokeAPI.defaultURL;
+      const url =
+        pageURL ?? `${PokeAPI.baseURL}/location-area?offset=0&limit=20`;
 
       if (this.pokeCache.get(url)) {
-        return this.pokeCache.get(url)?.val as ShallowLocations
+        return this.pokeCache.get(url)?.val as ShallowLocations;
       }
 
       const response = await fetch(url);
@@ -31,14 +33,58 @@ export class PokeAPI {
     }
   }
 
-  closeCache() {
-    this.pokeCache.stopReapLoop()
+  async fetchLocation(locationName: string): Promise<Location> {
+    try {
+      const url = `${PokeAPI.baseURL}/location-area/${locationName}`;
+
+      if (this.pokeCache.get(url)) {
+        return this.pokeCache.get(url)?.val as Location;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.pokeCache.add(url, data);
+      return data;
+    } catch (e) {
+      throw new Error(`Failed to fetch location: ${locationName}`, {
+        cause: e,
+      });
+    }
   }
 
-  //
-  //   async fetchLocation(locationName: string): Promise<Location> {
-  //     // implement this
-  //   }
+  async fetchPokemon(pokemonName: string): Promise<Pokemon> {
+    try {
+      const url = `${PokeAPI.baseURL}/pokemon/${pokemonName}`;
+
+      console.log(url)
+
+      if (this.pokeCache.get(url)) {
+        return this.pokeCache.get(url)?.val as Pokemon;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.pokeCache.add(url, data);
+      return data;
+    } catch (e) {
+      throw new Error(`Failed to fetch Pokemon: ${pokemonName}`, {
+        cause: e,
+      });
+    }
+  }
+
+  closeCache() {
+    this.pokeCache.stopReapLoop();
+  }
+
 }
 
 export type ShallowLocations = {
@@ -48,9 +94,15 @@ export type ShallowLocations = {
   results: {
     name: string;
     url: string;
-    }[]
+  }[];
 };
 
 export type Location = {
-  // add properties here
+  name: string;
+  pokemon_encounters: {
+    pokemon: {
+      name: string;
+      url: string;
+    };
+  }[];
 };

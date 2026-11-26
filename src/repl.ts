@@ -11,10 +11,14 @@ export async function startREPL(state: State) {
   readLine.on("line", async (input: string) => {
     if (!input.length) readLine.prompt();
 
-    const isValidCommand = commands.hasOwnProperty(input);
+    const cleanedInput = cleanInput(input);
+    const command = cleanedInput[0];
+    const arg = cleanedInput.slice(1);
+
+    const isValidCommand = commands.hasOwnProperty(command);
     if (isValidCommand) {
       try {
-        await commands[input].callback(state);
+        await commands[command].callback(state, ...arg);
       } catch (e) {
         console.log(e);
       } finally {

@@ -1,4 +1,3 @@
-import { getCommands } from "../command.js";
 import { State } from "../state.js";
 
 export async function commandhelp(state: State) {
